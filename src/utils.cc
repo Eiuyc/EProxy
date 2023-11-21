@@ -4,7 +4,7 @@
 auto ListenOn(IP ip, Port port) {
     auto server_addr{std::make_shared<sockaddr_in>()};
     FD fd{socket(AF_INET, SOCK_STREAM, 0)};
-    memset(server_addr.get(), 0x00, sizeof(server_addr));
+    memset(server_addr.get(), 0x00, sizeof(sockaddr_in));
     server_addr->sin_family = AF_INET;
     server_addr->sin_addr.s_addr = inet_addr(ip);
     server_addr->sin_port = htons(port);
@@ -24,7 +24,7 @@ auto ListenOn(IP ip, Port port) {
 auto ConnectTo(IP ip, Port port) {
     FD sock_fd = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in server_addr;
-    memset(&server_addr, 0x00, sizeof(server_addr));
+    memset(&server_addr, 0x00, sizeof(sockaddr_in));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr(ip);
     server_addr.sin_port = htons(port);
