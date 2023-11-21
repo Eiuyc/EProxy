@@ -2,23 +2,29 @@
 #define EPROXY_H_
 
 #include "config.h"
+#include "bridge.h"
 
-class Eproxy
+#include <atomic>
+#include <csignal>
+
+
+class EProxy
 {
-private:
-    /* data */
+    FD eproxy_fd_;
+    Config cfg_;
+    BridgeGroup bridge_group_;
+
 public:
-    Eproxy();
-    ~Eproxy();
+    EProxy(Config &&);
+    void Stop() {
+        printf("[EProxy] stopping...\n");
+        bridge_group_.Stop();
+    }
+    void WaitBridges() {
+        printf("[EProxy] waiting bridges...\n");
+        bridge_group_.WaitAll();
+    }
 };
-
-Eproxy::Eproxy()
-{
-}
-
-Eproxy::~Eproxy()
-{
-}
 
 
 #endif // EPROXY_H_
