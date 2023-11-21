@@ -1,4 +1,4 @@
-SOURCE_DIR=.
+SOURCE_DIR=$(cd "$(dirname "$0")" && pwd)
 cd $SOURCE_DIR
 
 BUILD_DIR=${BUILD_DIR:-${SOURCE_DIR}/build}

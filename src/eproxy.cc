@@ -1,4 +1,4 @@
-#include "config.h"
+#include "eproxy.h"
 
 int main(int argc, char *argv[]) {
     Config cfg{argc, argv};

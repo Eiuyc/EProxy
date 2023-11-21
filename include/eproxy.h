@@ -1,16 +1,18 @@
 #ifndef EPROXY_H_
 #define EPROXY_H_
 
+#include "config.h"
+
 class Eproxy
 {
 private:
     /* data */
 public:
-    Eproxy(/* args */);
+    Eproxy();
     ~Eproxy();
 };
 
-Eproxy::Eproxy(/* args */)
+Eproxy::Eproxy()
 {
 }
 

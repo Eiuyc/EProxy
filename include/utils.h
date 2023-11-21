@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef EPROXY_UTILS_H_
 #define EPROXY_UTILS_H_
 
