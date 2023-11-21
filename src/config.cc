@@ -1,34 +1,40 @@
 #include "config.h"
 
-bool Config::isValid(toml::table &) {
+bool Config::isValid() {
+    if(cfg_.empty()) return false;
     return true;
 }
 
-Config::Config(int argc, char *argv[]) {
-    try {
-        if(argc < 2) {
-            std::cerr << "no cfg file provided\n";
-        }
-        cfg_ = toml::parse_file(argv[1]);
-        if(!isValid(cfg_)) {
-            std::cerr << "Config file [" << argv[1] << "] is not valid\n";
-        }
-        using namespace std::string_view_literals;
-
-        server_ip_ = cfg_.at_path("server.ip").value_or(""sv);
-        server_port_ = cfg_.at_path("server.port").value_or(0);
-        app_cfgs_ = cfg_.at_path("app").as_array();
-        std::cout << "[Config] " << argv[1] << " ok\n";
-        std::cout << "[Config] server_ip_ = " << server_ip_ << " \n";
-        std::cout << "[Config] server_port_ = " << server_port_ << " \n";
+Config::Config(int argc, char *argv[]): cfg_file("") {
+    if(argc < 2) {
+        printf("[Config] no cfg file provided\n");
+        exit(-1);
+        return;
     }
-    catch (const toml::parse_error& err) {
-        std::cerr << "Parsing failed: " << err << "\n";
+    try {
+        cfg_file = argv[1];
+        cfg_ = toml::parse_file(cfg_file);
+        if(!isValid()) {
+            printf("[Eproxy] Config file [%s] is not valid\n", cfg_file);
+            exit(-1);
+            return;
+        }
+
+        using namespace std::string_view_literals;
+        eproxy_ip = cfg_.at_path("eproxy.ip").value_or(""sv).data();
+        eproxy_port = cfg_.at_path("eproxy.port").value_or(0);
+        app_cfgs = cfg_.at_path("app").as_array();
+        printf("[Config] parse %s ok\n", cfg_file);
+        printf("[Config] eproxy_ip = %s\n", eproxy_ip);
+        printf("[Config] eproxy_port = %d\n", eproxy_port);
+    }
+    catch (const toml::parse_error& e) {
+        printf("[Config] Parsing failed: %s\n", e.what());
     }
     catch (const std::exception& e) {
-        std::cerr << "Caught an std::exception: " << e.what() << "\n";
+        printf("[Config] Caught an std::exception: %s\n", e.what());
     }
     catch (...) {
-        std::cerr << "Caught an unknown exception\n";
+        printf("[Config] Caught an unknown exception\n");
     }
 }

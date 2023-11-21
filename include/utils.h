@@ -16,15 +16,21 @@
 using Port = uint16_t;
 using IP = const char *;
 
-class FD
-{
+
+class FD {
     int fd_;
-    void Close() { if(fd_ != -1) close(fd_); }
+    void Close() {
+        if(fd_ != -1) {
+            close(fd_);
+            printf("[FD] close [%d]\n", fd_);
+        }
+    }
     // copy con FD
     FD(const FD &) = delete;
     // copy assign FD
     FD& operator =(const FD &) = delete;
 public:
+    FD():fd_(-1) {}
     ~FD() { Close(); }
     // copy con int
     FD(const int &fd): fd_(fd) {}
@@ -63,9 +69,10 @@ public:
 };
 
 
-auto ListenOn(IP ip, Port port);
+std::pair<FD, std::shared_ptr<sockaddr_in>>
+ListenOn(IP ip, Port port);
 
-auto ConnectTo(IP ip, Port port);
+FD ConnectTo(IP ip, Port port);
 
 
 #endif // EPROXY_UTILS_H_

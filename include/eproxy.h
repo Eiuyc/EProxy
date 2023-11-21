@@ -3,22 +3,14 @@
 
 #include "config.h"
 
+
 class Eproxy
 {
-private:
-    /* data */
+    Config cfg_;
 public:
-    Eproxy();
-    ~Eproxy();
+    Eproxy(Config &&);
 };
 
-Eproxy::Eproxy()
-{
-}
-
-Eproxy::~Eproxy()
-{
-}
 
 
 #endif // EPROXY_H_
