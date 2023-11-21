@@ -22,7 +22,7 @@ auto ListenOn(IP ip, Port port) {
 }
 
 auto ConnectTo(IP ip, Port port) {
-    FD sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    FD sock_fd = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in server_addr;
     memset(&server_addr, 0x00, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
