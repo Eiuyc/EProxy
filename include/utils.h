@@ -30,10 +30,11 @@ class FD {
     // copy assign FD
     FD& operator =(const FD &) = delete;
 public:
-    FD():fd_(-1) {}
+    FD(): fd_{-1} {}
     ~FD() { Close(); }
+    
     // copy con int
-    FD(const int &fd): fd_(fd) {}
+    FD(const int &fd): fd_{fd} {}
 
     // copy assign int
     FD& operator =(const int &fd) {
@@ -43,10 +44,10 @@ public:
     }
 
     // move con int
-    FD(int &&fd): fd_(fd) {}
-    // move con FD
+    FD(int &&fd): fd_{fd} {}
 
-    FD(FD &&rhs): fd_(rhs.fd_) { rhs.fd_ = -1; }
+    // move con FD
+    FD(FD &&rhs): fd_{rhs.fd_} { rhs.fd_ = -1; }
     
     // move assign int
     FD& operator =(int &&fd) {
@@ -74,5 +75,6 @@ ListenOn(IP ip, Port port);
 
 FD ConnectTo(IP ip, Port port);
 
+FD GetEpfd();
 
 #endif // EPROXY_UTILS_H_

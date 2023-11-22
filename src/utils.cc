@@ -22,6 +22,7 @@ ListenOn(IP ip, Port port) {
     return std::pair(std::move(fd), server_addr);
 }
 
+
 FD ConnectTo(IP ip, Port port) {
     FD sock_fd = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in server_addr;
@@ -37,6 +38,7 @@ FD ConnectTo(IP ip, Port port) {
     return sock_fd;
 }
 
+
 bool AddFd(FD &epfd, FD &fd){
     bool result{true};
     epoll_event client_event;
@@ -48,4 +50,11 @@ bool AddFd(FD &epfd, FD &fd){
         result = false;
     }
     return result;
+}
+
+
+FD GetEpfd() {
+    int epfd{epoll_create1(EPOLL_CLOEXEC)};
+    printf("[UTILS] success created epfd[%d]\n", epfd);
+    return epfd;
 }

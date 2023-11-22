@@ -14,8 +14,9 @@ Config::Config(int argc, char *argv[]): cfg_file("") {
     try {
         cfg_file = argv[1];
         cfg_ = toml::parse_file(cfg_file);
+
         if(!isValid()) {
-            printf("[Eproxy] Config file [%s] is not valid\n", cfg_file);
+            printf("[Config] Config file [%s] is not valid\n", cfg_file);
             exit(-1);
             return;
         }

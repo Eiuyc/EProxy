@@ -9,7 +9,8 @@
 template<typename K, typename T>
 class Group
 {
-    std::unordered_multimap<K, T> items_;
+protected:
+    std::unordered_map<K, std::shared_ptr<T>> items_;
     std::shared_mutex mtx_;
     
 public:
@@ -17,9 +18,17 @@ public:
     template<typename... Args>
     bool Add(Args&&... args);
 
-    std::weak_ptr<T> Get(K);
+    std::weak_ptr<T> Get(K key) {
+        auto it{items_.find(key)};
+        if(it == items_.end()) {
+            return nullptr;
+        }
+        return it->second;
+    }
     
-    bool Del(K);
+    size_t Del(K key) {
+        return items_.erase(key);
+    }
 };
 
 

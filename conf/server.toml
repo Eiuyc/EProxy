@@ -6,10 +6,12 @@ port = 12121
 name = "app1"
 ip = "127.0.0.1"
 port = 80
+local_ip = "127.0.0.1"
 local_port = 10001
 
 # [[app]]
 # name = "app2"
 # ip = "0.0.0.0"
 # port = 10002
+# local_ip = "127.0.0.1"
 # local_port = 10002

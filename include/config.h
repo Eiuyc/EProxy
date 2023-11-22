@@ -8,9 +8,9 @@
 
 class Config
 {
-    toml::table cfg_;
     bool isValid();
 public:
+    toml::table cfg_;
     const char *cfg_file;
     IP eproxy_ip;
     Port eproxy_port;
