@@ -34,17 +34,31 @@ FD ConnectTo(IP ip, Port port) {
         printf("[UTILS] connect err: %s\n", strerror(errno));
         sock_fd = -1;
     };
-    printf("[UTILS] success connect to server (%s:%d)\n", ip, port);
+    printf("[UTILS] connect to server (%s:%d) ok\n", ip, port);
     return sock_fd;
 }
 
 
-bool AddFd(FD &epfd, FD &fd){
+bool SetFdNonBlock(FD &fd) {
+    int flag{fcntl(fd, F_GETFL, 0)};
+    bool result{flag != -1};
+    if (result) {
+        flag |= O_NONBLOCK;
+        result = (fcntl(fd, F_SETFL, flag) != -1);
+    }
+    const char * t[]{"failed", "ok"};
+    printf("[UTILS] set [%d] %s\n", int(fd), t[result?1:0]);
+    return result;
+};
+
+
+bool AddFd(FD &epfd, FD &fd) {
     bool result{true};
-    epoll_event client_event;
-    client_event.data.fd = fd;
-    client_event.events = EPOLLIN | EPOLLET;
-    if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &client_event) < 0) {
+    SetFdNonBlock(fd);
+    epoll_event event;
+    event.data.fd = fd;
+    event.events = EPOLLIN | EPOLLET;
+    if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &event) < 0) {
         perror("[AddFd] error:");
         printf("[AddFd] add fd[%d] to epfd[%d] failed\n", int(epfd), int(fd));
         result = false;
@@ -53,8 +67,15 @@ bool AddFd(FD &epfd, FD &fd){
 }
 
 
+bool DelFd(FD &epfd, FD &fd) {
+    bool result{true};
+    result = (epoll_ctl(epfd, EPOLL_CTL_DEL, fd, nullptr) == 0);
+    return result;
+}
+
+
 FD GetEpfd() {
     int epfd{epoll_create1(EPOLL_CLOEXEC)};
-    printf("[UTILS] success created epfd[%d]\n", epfd);
+    printf("[UTILS] created epfd[%d] ok\n", epfd);
     return epfd;
 }

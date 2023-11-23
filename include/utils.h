@@ -60,6 +60,7 @@ public:
     FD& operator =(FD &&rhs) {
         Close();
         fd_ = rhs.fd_;
+        rhs.fd_ = -1;
         return *this;
     }
 
@@ -69,12 +70,26 @@ public:
     bool operator !=(const int &fd) const { return fd_ != fd; }
 };
 
+template <>
+struct std::hash<FD&> {
+    size_t operator()(const FD& fd) const {
+        return int(fd);
+    }
+};
+
 
 std::pair<FD, std::shared_ptr<sockaddr_in>>
-ListenOn(IP ip, Port port);
+ListenOn(IP, Port);
 
-FD ConnectTo(IP ip, Port port);
+FD ConnectTo(IP, Port);
 
 FD GetEpfd();
+
+bool SetFdNonBlock(FD &);
+
+bool AddFd(FD &epfd, FD &fd);
+
+bool DelFd(FD &epfd, FD &fd);
+
 
 #endif // EPROXY_UTILS_H_

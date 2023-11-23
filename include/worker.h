@@ -2,9 +2,11 @@
 #define EPROXY_WORKER_H_
 
 #include "tunnel.h"
-#include <memory.h>
+#include "bridge.h"
+#include <memory>
+#include <vector>
 
-void Leader(std::shared_ptr<TunnelGroup>, IP, Port);
-void Worker(std::shared_ptr<TunnelGroup>, std::weak_ptr<FD>);
+void Leader(Bridge*, std::weak_ptr<TunnelGroup>, IP, Port, IP, Port);
+void Worker(std::weak_ptr<TunnelGroup>, FD&);
 
 #endif // EPROXY_WORKER_H_
