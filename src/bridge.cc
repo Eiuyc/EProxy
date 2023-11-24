@@ -13,11 +13,16 @@ Bridge::Bridge(
     app_port_{app_port},
     local_ip_{local_ip},
     local_port_{local_port},
-    key_{std::to_string(app_port) + std::to_string(local_port) + app_name + app_ip + local_ip},
+    key_{
+        std::to_string(app_port) + std::to_string(local_port) + 
+        app_name + app_ip + local_ip
+    },
     
     worker_fds_(2),
     worker_idx_{0},
-    thread_pool_{std::make_shared<BS::thread_pool_light>(worker_fds_.size()+1)},
+    thread_pool_{
+        std::make_shared<BS::thread_pool_light>(worker_fds_.size() + 1)
+    },
     tunnel_group_{std::make_shared<TunnelGroup>()}
 {
     printf("[Bridge] initializing workers...\n");
@@ -28,12 +33,14 @@ Bridge::Bridge(
             exit(1);
         }
         printf("[Bridge] initializing worker...\n");
-        thread_pool_->push_task(std::bind(Worker, tunnel_group_, std::ref(*worker_fd)));
+        thread_pool_->push_task(std::bind(
+            Worker, tunnel_group_, std::ref(*worker_fd)
+        ));
     }
     printf("[Bridge] initializing leader...\n");
-    thread_pool_->push_task(std::bind(Leader, this, tunnel_group_, local_ip, local_port, app_ip, app_port));
-    // leader_thread_ = std::thread(std::bind(Leader, tunnel_group_, local_ip, local_port, app_ip, app_port));
-    // leader_thread_.detach();
+    thread_pool_->push_task(std::bind(
+        Leader, this, tunnel_group_, local_ip, local_port, app_ip, app_port
+    ));
 }
 
 FD& Bridge::SelectWorkerFd() {
@@ -63,7 +70,7 @@ void Bridge::Stop() {
             shutdown(fd, SHUT_RDWR);
             printf("[Bridge] %s%d shutdown\n", title, int(fd));
             close(fd);
-            printf("[Bridge] %s%d stop\n", title, int(fd));
+            printf("[Bridge] %s%d closed\n", title, int(fd));
         }
     };
     ShutdownFd(leader_fd_, "leader");
@@ -73,7 +80,6 @@ void Bridge::Stop() {
 }
 
 void BridgeGroup::WaitAll() {
-    printf("[BridgeGroup] Wait map size: %ld...\n", items_.size());
     int i = 0;
     for(auto &[k, sp]: items_) {
         printf("[BridgeGroup] Waiting bridge%d...\n", i);

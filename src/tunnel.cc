@@ -30,7 +30,10 @@ Tunnel::Tunnel(Tunnel &&rhs):
 
 
 bool Tunnel::Register() {
-    printf("[Tunnel] try Registering [%d] [%d] to [%d]...\n", int(fd_), int(peer_fd_), int(*epfd_));
+    printf(
+        "[Tunnel] try Registering [%d] [%d] to [%d]...\n",
+        int(fd_), int(peer_fd_), int(*epfd_)
+    );
     
     bool result{AddFd(*epfd_, fd_)};
     if (result and !(result = AddFd(*epfd_, peer_fd_))) {
@@ -44,14 +47,20 @@ bool Tunnel::Register() {
 }
 
 bool Tunnel::Unregister() {
-    printf("[Tunnel] try Unregistering [%d] [%d] from [%d]...\n", int(fd_), int(peer_fd_), int(*epfd_));
+    printf(
+        "[Tunnel] try Unregistering (%d, %d) from [%d]...\n",
+        int(fd_), int(peer_fd_), int(*epfd_)
+    );
     DelFd(*epfd_, fd_);
     DelFd(*epfd_, peer_fd_);
     if(auto sp{tunnel_group_.lock()}) {
         sp->Del(int(fd_));
         sp->Del(int(peer_fd_));
     }
-    printf("[Tunnel] Unregister [%d] [%d] from [%d] success\n", int(fd_), int(peer_fd_), int(*epfd_));
+    printf(
+        "[Tunnel] Unregister (%d, %d) from [%d] success\n",
+        int(fd_), int(peer_fd_), int(*epfd_)
+    );
     return true;
 }
 

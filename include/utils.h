@@ -22,7 +22,7 @@ class FD {
     void Close() {
         if(fd_ != -1) {
             close(fd_);
-            printf("[FD] close [%d]\n", fd_);
+            printf("[FD%d] closed\n", fd_);
         }
     }
     // copy con FD

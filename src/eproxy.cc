@@ -5,9 +5,12 @@
 EProxy::EProxy(Config &&cfg):
     cfg_{std::move(cfg)}
 {
-    // auto [fd, eproxy_addr]{ListenOn(cfg_.eproxy_ip, cfg_.eproxy_port)};
-    // eproxy_fd_ = std::move(fd);
-    // printf("[EProxy] running on (%s:%d) [%d]\n", cfg_.eproxy_ip, cfg_.eproxy_port, int(eproxy_fd_));
+    auto [fd, eproxy_addr]{ListenOn(cfg_.eproxy_ip, cfg_.eproxy_port)};
+    eproxy_fd_ = std::move(fd);
+    printf(
+        "[EProxy] running on (%s:%d) [%d]\n",
+        cfg_.eproxy_ip, cfg_.eproxy_port, int(eproxy_fd_)
+    );
     int i = 0;
     for(auto& node: *cfg_.app_cfgs) {
         printf("[EProxy] creating [bridge%d]...\n", i++);

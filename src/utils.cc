@@ -18,7 +18,10 @@ ListenOn(IP ip, Port port) {
         fd = -1;
     }
     if(fd != -1)
-        printf("[UTILS] listen on (%s:%d) [%d] success\n", ip, port, static_cast<int>(fd));
+        printf(
+            "[UTILS] listen on (%s:%d) [%d] success\n",
+            ip, port, static_cast<int>(fd)
+        );
     return std::pair(std::move(fd), server_addr);
 }
 
