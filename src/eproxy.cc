@@ -1,4 +1,5 @@
 #include "eproxy.h"
+// #include "signal.h"
 
 
 EProxy::EProxy(Config &&cfg):
@@ -24,20 +25,16 @@ EProxy::EProxy(Config &&cfg):
 
 std::shared_ptr<EProxy> eproxy;
 
-
 void SignalHandler(int signum) {
     printf("[EProxy] signal %d received\n", signum);
     eproxy->Stop();
-    printf("[EProxy] ready to quit\n");
-    exit(signum);
+    printf("[EProxy] Wait all threads done...\n");
 }
-
 
 int main(int argc, char *argv[]) {
     signal(SIGINT, SignalHandler);
     eproxy = std::make_shared<EProxy>(Config{argc, argv});
-    // std::this_thread::sleep_for(std::chrono::seconds(100));
     eproxy->WaitBridges();
-    // SignalHandler(2);
+    printf("[EProxy] ready to quit\n");
     return 0;
 }

@@ -18,7 +18,6 @@ public:
     EProxy(Config &&);
     void Stop() {
         printf("[EProxy] stopping...\n");
-        printf("[EProxy] Waiting 30s for workers to quit\n");
         bridge_group_.Stop();
     }
     void WaitBridges() {
@@ -27,8 +26,5 @@ public:
     }
 };
 
-extern std::shared_ptr<EProxy> eproxy;
-
-void SignalHandler(int);
 
 #endif // EPROXY_H_

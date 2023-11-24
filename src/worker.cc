@@ -34,7 +34,7 @@ void Leader(
         }
         tunnel_group.lock()->Add(bridge, tunnel_group, std::move(accept_fd), app_ip, app_port);
     }
-    printf("=================================[Leader%d] done\n", int(leader_fd));
+    printf("[Leader%d] done\n", int(leader_fd));
 }
 
 
@@ -50,7 +50,7 @@ void Worker(std::weak_ptr<TunnelGroup> tunnel_group, FD& worker_fd) {
     int read_num{0};
     for(;;) {
         printf("[Worker%d] start loop\n", int(worker_fd));
-        int event_count = epoll_wait(worker_fd, &*epoll_events_.begin(), epoll_events_.size(), 10'000);
+        int event_count = epoll_wait(worker_fd, &*epoll_events_.begin(), epoll_events_.size(), 12'000);
         printf("[Worker%d] event_count=%d\n", int(worker_fd), event_count);
         if(event_count < 0) {
             printf("[Worker%d] epoll wait errorno: %d\n", int(worker_fd), errno);
@@ -90,9 +90,9 @@ void Worker(std::weak_ptr<TunnelGroup> tunnel_group, FD& worker_fd) {
                 read_num = 0;
             }
             read_msg[total_read_num] = 0x00;
-            printf("[Worker%d] recv [%d]:\n%s\n", int(worker_fd), fd, read_msg);
+            printf("[Worker%d] recv [%d]:=====\n%s\n=====\n", int(worker_fd), fd, read_msg);
             printf("[Worker%d] recv [%d]: %d bytes\n", int(worker_fd), fd, total_read_num);
         }
     }
-    printf("=================================[Worker%d] done\n", int(worker_fd));
+    printf("[Worker%d] done\n", int(worker_fd));
 }

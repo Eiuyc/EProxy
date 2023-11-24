@@ -27,10 +27,10 @@ Bridge::Bridge(
             perror("create epfd failed");
             exit(1);
         }
-        printf("=================================[Bridge] initializing worker...\n");
+        printf("[Bridge] initializing worker...\n");
         thread_pool_->push_task(std::bind(Worker, tunnel_group_, std::ref(*worker_fd)));
     }
-    printf("=================================[Bridge] initializing leader...\n");
+    printf("[Bridge] initializing leader...\n");
     thread_pool_->push_task(std::bind(Leader, this, tunnel_group_, local_ip, local_port, app_ip, app_port));
     // leader_thread_ = std::thread(std::bind(Leader, tunnel_group_, local_ip, local_port, app_ip, app_port));
     // leader_thread_.detach();
@@ -51,9 +51,9 @@ std::weak_ptr<TunnelGroup> Bridge::GetTunnelGroup() {
 }
 
 void Bridge::Wait() {
-    printf("[Bridge] wait_for_tasks...=================================\n");
+    printf("[Bridge] wait_for_tasks...\n");
     thread_pool_->wait_for_tasks();
-    printf("[Bridge] tasks done=================================\n");
+    printf("[Bridge] tasks done\n");
 }
 
 void Bridge::Stop() {
@@ -76,8 +76,9 @@ void BridgeGroup::WaitAll() {
     printf("[BridgeGroup] Wait map size: %ld...\n", items_.size());
     int i = 0;
     for(auto &[k, sp]: items_) {
-        printf("[BridgeGroup] Wait [bridge%d]...=================================\n", i++);
+        printf("[BridgeGroup] Waiting bridge%d...\n", i);
         sp->Wait();
+        printf("[BridgeGroup] bridge%d done\n", i++);
     }
 }
 

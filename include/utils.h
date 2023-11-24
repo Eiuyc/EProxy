@@ -92,4 +92,7 @@ bool AddFd(FD &epfd, FD &fd);
 bool DelFd(FD &epfd, FD &fd);
 
 
+void SignalHandler(int);
+
+
 #endif // EPROXY_UTILS_H_
