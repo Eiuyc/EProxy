@@ -17,9 +17,6 @@ void Leader(
     bridge->SetLeaderFd(std::move(fd));
     FD &leader_fd{bridge->GetLeaderFd()};
     printf("[Leader%d] running on (%s:%d)\n", int(leader_fd), local_ip, local_port);
-    // std::this_thread::sleep_for(std::chrono::seconds(4));
-    // printf("[Leader%d] done\n", int(leader_fd));
-
 
     sockaddr_in addr{*leader_addr};
     socklen_t l = sizeof(addr);
@@ -40,8 +37,6 @@ void Leader(
 
 void Worker(std::weak_ptr<TunnelGroup> tunnel_group, FD& worker_fd) {
     printf("[Worker%d] initializing...\n", int(worker_fd));
-    // std::this_thread::sleep_for(std::chrono::seconds(4));
-    // printf("[Worker%d] done\n", int(worker_fd));
     
     std::vector<epoll_event> epoll_events_(4096);
     char read_msg[2048];
@@ -79,7 +74,6 @@ void Worker(std::weak_ptr<TunnelGroup> tunnel_group, FD& worker_fd) {
             read_num = 0;
             while((read_num = recv(fd, buf_ptr, sizeof(read_msg) - total_read_num, 0)) > 0) {
                 printf("[Worker%d] read_num=%d\n", int(worker_fd), read_num);
-                // 将所读到的写入peer_fd
                 if(read_num && peer_fd != -1) {
                     // TODO：write error? signal(SIGPIPE, SIG_IGN) errno = EPIPE
                     int send_num = send(peer_fd, buf_ptr, read_num, 0);
@@ -92,6 +86,9 @@ void Worker(std::weak_ptr<TunnelGroup> tunnel_group, FD& worker_fd) {
             read_msg[total_read_num] = 0x00;
             printf("[Worker%d] recv [%d]:=====\n%s\n=====\n", int(worker_fd), fd, read_msg);
             printf("[Worker%d] recv [%d]: %d bytes\n", int(worker_fd), fd, total_read_num);
+            if(total_read_num == 0) {
+                t.lock()->Unregister();
+            }
         }
     }
     printf("[Worker%d] done\n", int(worker_fd));
