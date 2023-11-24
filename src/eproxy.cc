@@ -1,5 +1,6 @@
 #include "eproxy.h"
-// #include "signal.h"
+
+#include <csignal>
 
 
 EProxy::EProxy(Config &&cfg):

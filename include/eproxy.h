@@ -4,9 +4,6 @@
 #include "config.h"
 #include "bridge.h"
 
-#include <atomic>
-#include <csignal>
-
 
 class EProxy
 {

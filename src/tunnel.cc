@@ -28,6 +28,8 @@ Tunnel::Tunnel(Tunnel &&rhs):
 {
 }
 
+bool Tunnel::IsValid() {return valid_;}
+
 
 bool Tunnel::Register() {
     printf(
@@ -72,4 +74,23 @@ FD& Tunnel::GetFd() {
 
 FD& Tunnel::GetPeerFd() {
     return peer_fd_;
+}
+
+
+bool TunnelGroup::Add(
+    Bridge* bridge,
+    std::weak_ptr<TunnelGroup> tunnel_group,
+    FD &&fd, IP ip, Port port
+) {
+    auto sp{std::make_shared<Tunnel>(
+        bridge, tunnel_group,
+        std::move(fd), ip, port
+    )};
+    {
+        std::lock_guard lock(item_mtx_);
+        items_.insert(std::make_pair(int(sp->GetFd()), sp));
+        items_.insert(std::make_pair(int(sp->GetPeerFd()), sp));
+    }
+    sp->Register();
+    return true;
 }

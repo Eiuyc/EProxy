@@ -4,8 +4,6 @@
 #include "utils.h"
 #include "group.h"
 
-#include <list>
-#include <memory>
 
 class Bridge;
 class TunnelGroup;
@@ -27,7 +25,7 @@ public:
     // move con
     Tunnel(Tunnel &&);
 
-    bool IsValid() {return valid_;}
+    bool IsValid();
 
     bool Register();
     bool Unregister();
@@ -40,23 +38,7 @@ public:
 class TunnelGroup: public Group<int, Tunnel> {
 
 public:
-    template<typename A0, typename A1, typename A2, typename A3, typename A4>
-    bool Add(A0 &&a0, A1 &&a1, A2 &&a2, A3 &&a3, A4 &&a4) {
-        auto sp{std::make_shared<Tunnel>(
-            std::forward<A0>(a0),
-            std::forward<A1>(a1),
-            std::forward<A2>(a2),
-            std::forward<A3>(a3),
-            std::forward<A4>(a4)
-        )};
-        {
-            std::lock_guard lock(item_mtx_);
-            items_.insert(std::make_pair(int(sp->GetFd()), sp));
-            items_.insert(std::make_pair(int(sp->GetPeerFd()), sp));
-        }
-        sp->Register();
-        return true;
-    }
+    bool Add(Bridge*, std::weak_ptr<TunnelGroup>, FD &&, IP, Port);
 };
 
 #endif // EPROXY_TUNNEL_H_

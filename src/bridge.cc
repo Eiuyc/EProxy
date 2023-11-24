@@ -1,4 +1,7 @@
+#include <unistd.h>
+
 #include "bridge.h"
+#include "worker.h"
 
 
 Bridge::Bridge(
@@ -77,6 +80,24 @@ void Bridge::Stop() {
     for(auto &worker_fd: worker_fds_) {
         ShutdownFd(*worker_fd, "worker");
     }
+}
+
+void Bridge::SetLeaderFd(FD &&fd) {leader_fd_ = std::move(fd);}
+FD& Bridge::GetLeaderFd() {return leader_fd_;}
+
+
+bool BridgeGroup::Add(
+    const char* app_name,
+    IP app_ip,
+    Port app_port,
+    IP local_ip,
+    Port local_port
+) {
+    auto sp{std::make_shared<Bridge>(
+        app_name, app_ip, app_port, local_ip, local_port
+    )};
+    items_.insert(std::make_pair(sp->GetKey(), sp));
+    return true;
 }
 
 void BridgeGroup::WaitAll() {

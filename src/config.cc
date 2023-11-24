@@ -1,6 +1,7 @@
 #include "config.h"
 
-bool Config::isValid() {
+
+bool Config::IsValid() {
     if(cfg_.empty()) return false;
     return true;
 }
@@ -15,7 +16,7 @@ Config::Config(int argc, char *argv[]): cfg_file("") {
         cfg_file = argv[1];
         cfg_ = toml::parse_file(cfg_file);
 
-        if(!isValid()) {
+        if(!IsValid()) {
             printf("[Config] Config file [%s] is not valid\n", cfg_file);
             exit(-1);
             return;

@@ -1,18 +1,15 @@
 #ifndef EPROXY_BRIDGE_H_
 #define EPROXY_BRIDGE_H_
 
-#include "utils.h"
 #include "tunnel.h"
-#include "group.h"
-#include "worker.h"
 
 #include "BS_thread_pool/BS_thread_pool_light.hpp"
 
 #include <deque>
 #include <shared_mutex>
 
-class Bridge {
 
+class Bridge {
     const char * app_name_;
     IP app_ip_;
     Port app_port_;
@@ -45,26 +42,15 @@ public:
     std::weak_ptr<TunnelGroup> GetTunnelGroup();
     void Wait();
     void Stop();
-    void SetLeaderFd(FD &&fd) {leader_fd_ = std::move(fd);}
-    FD& GetLeaderFd() {return leader_fd_;}
+    void SetLeaderFd(FD &&fd);
+    FD& GetLeaderFd();
 };
 
 
 class BridgeGroup: public Group<std::string, Bridge> {
 
 public:
-    template<typename A0, typename A1, typename A2, typename A3, typename A4>
-    bool Add(A0 &&a0, A1 &&a1, A2 &&a2, A3 &&a3, A4 &&a4) {
-        auto sp{std::make_shared<Bridge>(
-            std::forward<A0>(a0),
-            std::forward<A1>(a1),
-            std::forward<A2>(a2),
-            std::forward<A3>(a3),
-            std::forward<A4>(a4)
-        )};
-        items_.insert(std::make_pair(sp->GetKey(), sp));
-        return true;
-    }
+    bool Add(const char*, IP, Port, IP, Port);
     void WaitAll();
     void Stop();
 };
