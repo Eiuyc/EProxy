@@ -2,13 +2,13 @@
 #define EPROXY_CONFIG_H_
 
 #include "utils.h"
+
 #include "toml++/toml.hpp"
-#include <iostream>
 
 
 class Config
 {
-    bool isValid();
+    bool IsValid();
 public:
     toml::table cfg_;
     const char *cfg_file;

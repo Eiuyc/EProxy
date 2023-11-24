@@ -1,5 +1,61 @@
 #include "utils.h"
 
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <sys/epoll.h>
+#include <unistd.h>
+
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+
+void FD::Close() {
+    if(fd_ != -1) {
+        close(fd_);
+        printf("[FD%d] closed\n", fd_);
+    }
+}
+
+FD::FD(): fd_{-1} {}
+FD::~FD() { Close(); }
+
+// copy con int
+FD::FD(const int &fd): fd_{fd} {}
+
+// copy assign int
+FD& FD::operator =(const int &fd) {
+    Close();
+    fd_ = fd;
+    return *this;
+}
+
+// move con int
+FD::FD(int &&fd): fd_{fd} {}
+
+// move con FD
+FD::FD(FD &&rhs): fd_{rhs.fd_} { rhs.fd_ = -1; }
+
+// move assign int
+FD& FD::operator =(int &&fd) {
+    Close();
+    fd_ = fd;
+    return *this;
+}
+
+// move assign FD
+FD& FD::operator =(FD &&rhs) {
+    Close();
+    fd_ = rhs.fd_;
+    rhs.fd_ = -1;
+    return *this;
+}
+
+FD::operator int() const { return fd_; }
+
+bool FD::operator ==(const int &fd) const { return fd_ == fd; }
+bool FD::operator !=(const int &fd) const { return fd_ != fd; }
+
 
 std::pair<FD, std::shared_ptr<sockaddr_in>>
 ListenOn(IP ip, Port port) {
@@ -18,7 +74,10 @@ ListenOn(IP ip, Port port) {
         fd = -1;
     }
     if(fd != -1)
-        printf("[UTILS] listen on (%s:%d) [%d] success\n", ip, port, static_cast<int>(fd));
+        printf(
+            "[UTILS] listen on (%s:%d) [%d] success\n",
+            ip, port, static_cast<int>(fd)
+        );
     return std::pair(std::move(fd), server_addr);
 }
 
