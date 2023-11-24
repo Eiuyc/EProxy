@@ -12,6 +12,6 @@ local_port = 10001
 [[app]]
 name = "app2"
 ip = "127.0.0.1"
-port = 11111
+port = 8080
 local_ip = "127.0.0.1"
 local_port = 10002
