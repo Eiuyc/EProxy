@@ -9,7 +9,8 @@ Tunnel::Tunnel(
 ):
     tunnel_group_{tunnel_group},
     fd_{std::move(fd)},
-    peer_fd_{ConnectTo(ip, port)}
+    peer_fd_{ConnectTo(ip, port)},
+    valid_{false}
 {
     printf("[Tunnel(%d,%d)] initializing...\n", int(fd_), int(peer_fd_));
     if(peer_fd_ == -1){
@@ -17,6 +18,7 @@ Tunnel::Tunnel(
         return;
     }
     epfd_ = &bridge->SelectWorkerFd();
+    valid_ = true;
 }
 
 // move con
@@ -29,7 +31,6 @@ Tunnel::Tunnel(Tunnel &&rhs):
 }
 
 bool Tunnel::IsValid() {return valid_;}
-
 
 bool Tunnel::Register() {
     printf(
@@ -66,11 +67,9 @@ bool Tunnel::Unregister() {
     return true;
 }
 
-
 FD& Tunnel::GetFd() {
     return fd_;
 }
-
 
 FD& Tunnel::GetPeerFd() {
     return peer_fd_;
@@ -86,11 +85,14 @@ bool TunnelGroup::Add(
         bridge, tunnel_group,
         std::move(fd), ip, port
     )};
-    {
-        std::lock_guard lock(item_mtx_);
-        items_.insert(std::make_pair(int(sp->GetFd()), sp));
-        items_.insert(std::make_pair(int(sp->GetPeerFd()), sp));
+    bool ok{sp->IsValid()};
+    if(ok) {
+        {
+            std::lock_guard lock(item_mtx_);
+            items_.insert(std::make_pair(int(sp->GetFd()), sp));
+            items_.insert(std::make_pair(int(sp->GetPeerFd()), sp));
+        }
+        sp->Register();
     }
-    sp->Register();
-    return true;
+    return ok;
 }
