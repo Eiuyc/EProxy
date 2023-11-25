@@ -6,7 +6,7 @@ project(
     DESCRIPTION "EProxy"
     LANGUAGES CXX
 )
-# Debug Release RelWithDebInfo >和 MinSizeRel。
+# Debug Release RelWithDebInfo MinSizeRel
 set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
 set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
